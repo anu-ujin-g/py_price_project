@@ -1,0 +1,27 @@
+#List of product urls we want to track prices for
+urls_culinary = ['https://www.amazon.com/Lodge-Skillet-Pre-Seasoned-Skillet-Silicone/dp/B00G2XGC88/ref=sxbs_sxwds-stvp?cv_ct_cx=075536301006&dchild=1&keywords=075536301006&pd_rd_i=B00G2XGC88&pd_rd_r=70341346-4dc8-4a5e-9f66-dbb5778921ce&pd_rd_w=haIr5&pd_rd_wg=luESg&pf_rd_p=183579a1-f0e6-4556-8e39-8fe08e8f8141&pf_rd_r=MVY3PBAWSQ37BDCYDZY5&psc=1&qid=1587220852&sr=1-1-dd5817a1-1ba7-46c2-8996-f96e7b0f409c',
+        'https://www.amazon.com/KitchenAid-KHB1231IC-2-Speed-Hand-Blender/dp/B00LXHU61W/ref=sr_1_1?dchild=1&keywords=883049336367&qid=1587220902&s=home-garden&sr=1-1',
+        'https://www.amazon.com/Lodge-Quart-Dutch-Pre-Seasoned-Handle/dp/B00063RWYI/ref=sr_1_1?dchild=1&keywords=075536361505&qid=1587220950&s=home-garden&sr=1-1',
+        'https://www.amazon.com/J-Henckels-International-Forged-16901-201/dp/B001S41SH6/ref=sr_1_1?dchild=1&keywords=035886257644&qid=1587221023&s=home-garden&sr=1-1',
+        'https://www.amazon.com/George-Foreman-Adjustable-Temperature-GR2121P/dp/B00C1TA3JG/ref=sr_1_2_sspa?dchild=1&keywords=027043993854&qid=1587221189&sr=8-2-spons&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUEyNFJTTjk1NFpBTEpPJmVuY3J5cHRlZElkPUEwNDMzMDA5MzFEVzhVN0tZSDVESiZlbmNyeXB0ZWRBZElkPUEwNTYzNjM3MU9RRjlGSlU0QUVCNyZ3aWRnZXROYW1lPXNwX210ZiZhY3Rpb249Y2xpY2tSZWRpcmVjdCZkb05vdExvZ0NsaWNrPXRydWU=',
+        'https://www.amazon.com/Cuisinart-SS-15-Coffee-Coffeemaker-Single-Serve/dp/B01KIG4YNO/ref=sr_1_1?dchild=1&keywords=086279090645&qid=1587221345&sr=8-1',
+        'https://www.amazon.com/Cuisinart-GR-4N-Griddler-Silver-Black/dp/B002YD99Y4/ref=sr_1_6?dchild=1&keywords=086279007759&qid=1587221381&sr=8-6',
+        'https://www.amazon.com/Cuisinart-FP-8GM-Elemental-Processor-Gunmetal/dp/B00MVWGFP4/ref=sr_1_1?dchild=1&keywords=086279080370&qid=1587221450&sr=8-1',
+        'https://www.amazon.com/Weber-44010001-Spirit-2-Burner-Propane/dp/B077K1MK8N/ref=sr_1_1?dchild=1&keywords=077924058516&qid=1587221524&sr=8-1',
+        'https://www.amazon.com/Weber-Original-Kettle-Charcoal-Grill/dp/B00004RALW/ref=sr_1_1?dchild=1&keywords=077924025297&qid=1587221556&sr=8-1'
+        
+]
+
+urls = [
+          'https://www.amazon.com/Dark-Souls-Remastered-PlayStation-4/dp/B078Y4FR14/ref=sr_1_1?dchild=1&keywords=dark+souls+remastered&qid=1587182763&sr=8-1',
+          'https://www.amazon.com/Dark-Souls-Remastered-Xbox-One/dp/B078Y4DLC1/ref=sr_1_1?dchild=1&keywords=dark+souls+remastered+xbox+1&qid=1586987434&sr=8-1',
+          'https://www.amazon.com/Bloodborne-Hits-PlayStation-4/dp/B07DNLYMV4/ref=sr_1_6?dchild=1&keywords=bloodborne&qid=1587044407&sr=8-6',
+    'https://www.amazon.com/Red-Dead-Redemption-PS4-playstation-4/dp/B0776YMQN1/ref=sr_1_3?dchild=1&keywords=2+red+dead+redemption&qid=1587182901&sr=8-3',
+    'https://www.amazon.com/Red-Dead-Redemption-2-Xbox-One/dp/B01MAYC1CJ/ref=sr_1_4?dchild=1&keywords=2+red+dead+redemption&qid=1587182901&sr=8-4',
+    'https://www.amazon.com/Sekiro-Shadows-Die-Twice-PlayStation-4/dp/B07DJWBYJN/ref=sr_1_1?dchild=1&keywords=sekiro&qid=1587183027&sr=8-1',
+        'https://www.amazon.com/Sekiro-Shadows-Die-Twice-Xbox-One/dp/B07DNQD2GQ/ref=sr_1_2?dchild=1&keywords=sekiro&qid=1587217583&sr=8-2',
+    'https://www.amazon.com/Halo-5-Xbox-One/dp/B00D781W3Q/ref=sr_1_1?dchild=1&keywords=halo+5&qid=1587217844&sr=8-1',
+    'https://www.amazon.com/God-War-Hits-PlayStation-4/dp/B07XQKTPB2/ref=sr_1_1?crid=31MMOB765K721&dchild=1&keywords=god+of+war+ps4&qid=1587217879&sprefix=god+of+war%2Caps%2C152&sr=8-1',
+    'https://www.amazon.com/Uncharted-4-Thiefs-End-PS4-playstation/dp/B07GLGSHWN/ref=sr_1_6?dchild=1&keywords=uncharted+4&qid=1587217909&sr=8-6'
+
+]
