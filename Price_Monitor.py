@@ -11,7 +11,7 @@ from datetime import datetime
 
 '''
 Price tracking tool for an "Informed buyer"
-Input: basket of items
+Input: URL
 Output: dataframe consisting of prices of the item on Amazon, Target, and Walmart websites
 '''
 
@@ -144,4 +144,18 @@ def scraper(url_list, path):
         prices = prices.append(row_results, ignore_index=True)
 
 #run the scraper
-scraper(basket_list, path)
+runtime = {}
+start = time.time()
+runtime['start_scrape'] = str(datetime.today())
+
+i = 1
+while i <2:
+    scraper(basket_list, path)
+    time.sleep(10)
+    i += 1
+
+end = time.time()
+runs = end - start
+runtime['runtime'] = str(runs)
+with open('runtime.json', 'a') as rt:
+    json.dump(runtime, rt)
