@@ -8,6 +8,8 @@ import numpy as np
 import json
 import time
 from datetime import datetime
+from multiprocessing.pool import Pool
+from functools import partial
 
 '''
 Price tracking tool for an "Informed buyer"
@@ -32,7 +34,8 @@ def scraper(url_list, path):
     for amazon_url in url_list:
         # empty dictionary to store output
         row_results = {}
-
+        row_results['scrape_time'] = str(datetime.today())
+        
         #find product on amazon
         amazon_driver = Chrome(executable_path=path)
         amazon_driver.get(amazon_url)
@@ -143,6 +146,29 @@ def scraper(url_list, path):
             
         prices = prices.append(row_results, ignore_index=True)
 
+
+
+'''
+Pooling to optimize runtime of the function
+'''
+
+'''
+Due to the particulars of pooling, we need to create a partial version of scraper that already has the path
+defined
+'''
+scraper_partial = partial(scraper, path=path)
+'''
+We utilize a generator to split the input list into 4 lists
+so that we can run reach on one of our 4 CPUs
+'''
+def chunkify(lst, n):
+    """builds generator for dividing input lst into n chunks"""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+chunked_basket = list(chunkify(basket_list, 4))
+
+
+
 #run the scraper
 runtime = {}
 start = time.time()
@@ -150,8 +176,8 @@ runtime['start_scrape'] = str(datetime.today())
 
 i = 1
 while i <2:
-    scraper(basket_list, path)
-    time.sleep(10)
+    with Pool(4) as p:
+        p.map(scraper_partial, chunked_basket)
     i += 1
 
 end = time.time()
