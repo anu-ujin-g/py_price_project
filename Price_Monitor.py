@@ -34,16 +34,20 @@ def scraper(url_list, path):
     for amazon_url in url_list:
         # empty dictionary to store output
         row_results = {}
-        row_results['scrape_time'] = str(datetime.today())
+        # row_results['scrape_time'] = str(datetime.today())
         
         #find product on amazon
         amazon_driver = Chrome(executable_path=path)
         amazon_driver.get(amazon_url)
         #wait for the webpage to load
-        time.sleep(5)
+        time.sleep(10)
 
         #grab product name from amazon
-        row_results['amazon_name'] = amazon_driver.find_element_by_xpath('//*[@id="productTitle"]').text
+        try:
+            amazon_name = amazon_driver.find_element_by_xpath('//*[@id="priceblock_ourprice"]').text
+            row_results['amazon_price'] = amazon_name
+        except:
+            row_results['amazon_price'] = 'Price not found'
         
         #get amazon price, if price is no longer available append 'Price not found'
         try:
