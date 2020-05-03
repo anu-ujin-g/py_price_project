@@ -44,10 +44,10 @@ def scraper(url_list, path):
 
         #grab product name from amazon
         try:
-            amazon_name = amazon_driver.find_element_by_xpath('//*[@id="priceblock_ourprice"]').text
-            row_results['amazon_price'] = amazon_name
+            amazon_name = amazon_driver.find_element_by_xpath('//*[@id="productTitle"]').text
+            row_results['amazon_name'] = amazon_name
         except:
-            row_results['amazon_price'] = 'Price not found'
+            row_results['amazon_name'] = 'Item not found'
         
         #get amazon price, if price is no longer available append 'Price not found'
         try:
@@ -121,7 +121,7 @@ def scraper(url_list, path):
         walmart_driver = Chrome(executable_path=path)
         walmart_url = 'https://www.walmart.com/search/?query=' + upc_id
         walmart_driver.get(walmart_url)
-        
+        time.sleep(5)
         names_prices = walmart_driver.find_elements_by_xpath("//div[contains(@class, 'tile-content Grid-col u-size-8-10-l list-description-wrapper')]")
         
         #get walmart name and price if product was found on walmart
@@ -146,7 +146,7 @@ def scraper(url_list, path):
         timeofscrape['scraped_at'] = str(datetime.today())
         timeofscrape['item'] = row_results
         with open('price_monitor.json', 'a') as pm:
-            json.dump(timeofscrape, pm)
+            pm.write(','+json.dumps(timeofscrape))
             
         prices = prices.append(row_results, ignore_index=True)
 

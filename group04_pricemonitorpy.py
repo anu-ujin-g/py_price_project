@@ -5,6 +5,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import re
 import json
 import time
 from datetime import datetime
@@ -16,13 +18,12 @@ Price tracking tool for an "Informed buyer"
 Input: Basket of URLs
 Output: Dataframe consisting of prices of the item on Amazon, Target, and Walmart websites
 '''
-def scraper(url_list, path):
-
+def scraper(url_list, path, informed=True):
+  
     #loop through entries in list of URLs
     for amazon_url in url_list:
         #empty dictionary to store output
         row_results = {}
-
         
         #find product on Amazon
         amazon_driver = Chrome(executable_path=path)
@@ -32,14 +33,15 @@ def scraper(url_list, path):
 
         #grab product name from Amazon
         try:
-            amazon_name = amazon_driver.find_element_by_xpath('//*[@id="priceblock_ourprice"]').text
-            row_results['amazon_price'] = amazon_name
+            amazon_name = amazon_driver.find_element_by_xpath('//*[@id="productTitle"]').text
+            row_results['amazon_name'] = amazon_name
         except:
-            row_results['amazon_price'] = 'Price not found'
+            row_results['amazon_name'] = 'Item not found'
         
         #get Amazon price, if price is no longer available append 'Price not found'
         try:
-            row_results['amazon_price'] = amazon_driver.find_element_by_xpath('//*[@id="priceblock_ourprice"]').text
+            amazon_name = amazon_driver.find_element_by_xpath('//*[@id="priceblock_ourprice"]').text
+            row_results['amazon_price'] = amazon_name
         except:
             row_results['amazon_price'] = 'Price not found'
         
@@ -72,8 +74,8 @@ def scraper(url_list, path):
             upc_driver.quit()
             #add the new asin --> upc to the dict
             ASIN_dict[asin] = upc_id
-            
-
+            with open('allusers.json','w') as b:
+                b.write(json.dumps(ASIN_dict))
         #find product on Target
         target_driver = Chrome(executable_path=path)
         target_url = 'https://www.target.com/s?searchTerm=' + upc_id
@@ -98,6 +100,7 @@ def scraper(url_list, path):
         target_driver.quit()
     
 
+
         #find product on Walmart
         walmart_driver = Chrome(executable_path=path)
         walmart_url = 'https://www.walmart.com/search/?query=' + upc_id
@@ -107,6 +110,7 @@ def scraper(url_list, path):
         
         #get Walmart name and price if product was found on Walmart
         if len(names_prices) == 0:
+            
             row_results['walmart_name'] = 'Item not found'
             row_results['walmart_price'] = 'Price not found'
         else:
@@ -124,8 +128,12 @@ def scraper(url_list, path):
         timeofscrape = {}
         timeofscrape['scraped_at'] = str(datetime.today())
         timeofscrape['item'] = row_results
-        with open('price_monitor.json', 'a') as pm:
-            pm.write(json.dumps(','+timeofscrape))
+        if informed==True:
+            with open('price_monitor.json', 'a') as pm:
+                pm.write(','+json.dumps(timeofscrape))
+        elif informed==False:
+            with open('price_scraper.json', 'a') as pm:
+                pm.write(','+json.dumps(timeofscrape))            
 
 
 '''
@@ -145,7 +153,12 @@ Input: a search string, a number of items and a low and high value for that prod
     Note: input search term as a space seperated string only. 
 Output: n items that match the price criteria for the item.
 '''
-def find_top_n(search_term: str, n: int, low_price: float, high_price: float, min_reviews: int, min_rating: float):
+ddef find_top_n(search_term: str, n: int, low_price: float, high_price: float, min_reviews: int, min_rating: float):
+    '''
+    This function takes as input a search string, a number of items and a low and high value for that product.
+    Note: input search term as a space seperated string only. 
+    It returns the n items that match the price criteria for the item. 
+    '''
     final_items = []
     updated_search = search_term.replace(' ', '+')
     for page_number in count(1):
@@ -206,10 +219,10 @@ prices = pd.DataFrame(columns=['scrape_time', 'amazon_name', 'amazon_price', 'ta
 path = '/usr/local/bin/chromedriver'
 
 #basket of items as URL
-with open('baskets/basket_list.json') as l:
+with open('basket_list.json') as l:
   basket_list = json.load(l)
 #basket of items as ASIN-UPC
-with open('baskets/allusers.json') as f:
+with open('allusers.json') as f:
   ASIN_dict = json.load(f) 
 
   
@@ -237,10 +250,10 @@ def price_scraper():
 
         #for less than 4 items in basket, run regular scraper
         if len(basket)<4:
-            scraper(basket,path)
+            scraper(basket,path,informed=True)
         #else, run pool
         else:
-            # Due to the particulars of pooling, we need to create a partial version of scraper that already has the path defined
+            # Due to the particulars of pooling, need to create a partial version of scraper with path defined
             scraper_partial = partial(scraper, path=path)
             chunked_basket = list(chunkify(basket, 4))
             with Pool(4) as p:
@@ -251,7 +264,60 @@ def price_scraper():
         runtime['runtime'] = str(runs)
         with open('runtime.json', 'a') as rt:
             json.dump(runtime, rt)
-    '''Window Shopper'''
+            
+        # OUTPUT
+        with open('price_monitor.json') as f:
+            price_tracker = json.loads("[" + f.read() + "]")
+        prices = []
+        for p in price_tracker:
+            price_dict = dict(p)
+            scraped_at = price_dict['scraped_at']
+            items = list(price_dict['item'].values())
+            price = [scraped_at]+items
+            prices.append(price)
+        #create dataframe for entire result dataset
+        price_df = pd.DataFrame(prices, columns=['scraped_at','amazon_name', 'amazon_price', 'target_name', \
+                                                 'target_price', 'walmart_name', 'walmart_price'])
+        #for each item in the basket
+        n = len(basket)
+        item_amzn = price_df['amazon_name'][-n:].unique()
+        for idx in range(len(item_amzn)):
+            title = item_amzn[idx]
+            print(title)
+            item_title = str(item_amzn[idx][:15])
+            #create a dataframe with prices over time
+            dfout = price_df[price_df['amazon_name'].str.contains(re.escape(item_title))]
+
+            #check Amazon
+            a = list(dfout['amazon_price'])
+            if a[-1] <= min(a):
+                if a[-1] == 'Price not found':
+                    print('Unfortunately the item is not sold at Amazon')
+                else:
+                    print('Price is at its lowest at Amazon today at',a[-1])
+            else:
+                print('Please wait for a better deal at Amazon')
+            #check Target
+            t = list(dfout['target_price'])
+            if t[-1] <= min(t):
+                if t[-1] == 'Price not found':
+                    print('Unfortunately the item is not sold at Target')
+                else:
+                    print('Price is at its lowest at Target today at',t[-1])
+            else:
+                print('Please wait for a better deal at Target')
+            #check Walmart
+            w = list(dfout['walmart_price'])
+            if w[-1] <= min(w):
+                if w[-1] == 'Price not found':
+                    print('Unfortunately the item is not sold at Walmart')
+                else:
+                    print('Price is at its lowest at Walmart today at',w[-1])
+            else:
+                print('Please wait for a better deal at Walmart')
+
+                
+    '''Window Shopper'''   
     elif buyer_type == 'W':
         print('Please provide some information to narrow your search: ')
         search_term = input('Enter a type of product you want to purchase and press Enter key when done: ')
@@ -268,16 +334,35 @@ def price_scraper():
             min_rating = float(input('Select minimum rating and press Enter key when done: '))
             basket = find_top_n(search_term, n, low_price, high_price, min_reviews, min_rating)
         #run the scraper
+        a = {"scraped_at": "date", "item": {"amazon_name": "Amazon name", "amazon_price": "Amazon price", \
+                                            "target_name": "Target name", "target_price": "Target price", \
+                                            "walmart_name": "Walmart name", "walmart_price": "Walmart price"}}
+        with open('price_scraper.json', 'w') as pm:
+            pm.write(json.dumps(a))
         #for less than 4 items in basket, run regular scraper
         if len(basket)<4:
-            scraper(basket,path)
+            scraper(basket,path,informed=False)
         #else, run pool
         else:
             # Due to the particulars of pooling, we need to create a partial version of scraper that already has the path defined
-            scraper_partial = partial(scraper, path=path)
+            scraper_partial = partial(scraper, path=path, informed=False)
             chunked_basket = list(chunkify(basket, 4))
             with Pool(4) as p:
                 p.map(scraper_partial, chunked_basket)
+                
+        # OUTPUT
+        with open('price_scraper.json') as f:
+            price_tracker = json.loads("[" + f.read() + "]")
+        prices = []
+        for p in price_tracker:
+            price_dict = dict(p)
+            scraped_at = price_dict['scraped_at']
+            items = list(price_dict['item'].values())
+            price = [scraped_at]+items
+            prices.append(price)
+        price_df = pd.DataFrame(prices, columns=['scraped_at','amazon_name', 'amazon_price', 'target_name', 'target_price', 'walmart_name', 'walmart_price'])
+        price_df = price_df[1:]
+        return price_df
 
 
 
