@@ -1,5 +1,5 @@
-# Python Price Project
-Price tracking project for NYU DSGA-3001 Advanced Python course
+# Python Price Tracking and Monitoring Tool
+Project for NYU DS-GA 3001 Advanced Python course
 ### Authors: 
 - Anu-Ujin Gerelt-Od
 - Khasi-Marc Jamieson
